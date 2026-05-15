@@ -6,6 +6,10 @@ import { useLanguage } from "@/lib/LanguageContext";
 type FormState = { name: string; email: string; message: string };
 const empty: FormState = { name: "", email: "", message: "" };
 
+const ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ID
+  ? `https://formspree.io/f/${process.env.NEXT_PUBLIC_FORMSPREE_ID}`
+  : "/api/contact";
+
 export function ContactForm() {
   const { t } = useLanguage();
   const [form, setForm] = useState<FormState>(empty);
@@ -25,15 +29,21 @@ export function ContactForm() {
     setIsSuccess(false);
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(form),
       });
-      const result = (await res.json()) as { ok: boolean; message?: string; error?: string; errors?: string[] };
+      const result = (await res.json()) as { ok?: boolean; message?: string; error?: string; errors?: { message?: string }[] | string[] };
 
-      if (!res.ok || !result.ok) {
-        setStatusMessage(result.error ?? result.errors?.join(" ") ?? t.contact.errorFallback);
+      if (!res.ok) {
+        const errMsg =
+          result.error ??
+          (Array.isArray(result.errors)
+            ? (result.errors as { message?: string }[]).map((e) => e.message ?? String(e)).join(" ")
+            : undefined) ??
+          t.contact.errorFallback;
+        setStatusMessage(errMsg);
         setIsSuccess(false);
         return;
       }

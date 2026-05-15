@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getProjectBySlug } from "@/data/projects";
+import { getProjects, getProjectBySlug } from "@/data/projects";
 import { ProjectDetailContent } from "@/components/ProjectDetailContent";
 
-export const dynamic = "force-dynamic";
-
 type Props = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  return getProjects().map((p) => ({ slug: p.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
