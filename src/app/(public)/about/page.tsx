@@ -2,7 +2,6 @@
 
 import { useLanguage } from "@/lib/LanguageContext";
 
-const highlights = ["JavaScript moderno (ESNext)", "React + UI systems", "Accesibilidad WCAG", "Core Web Vitals", "SEO técnico", "IA aplicada a producto"];
 const skills = ["HTML5", "CSS3", "JavaScript", "React", "PHP", "Bootstrap", "OJS"];
 
 export default function AboutPage() {
@@ -18,7 +17,7 @@ export default function AboutPage() {
         <div className="skills-card">
           <p className="section-title">{t.about.focus}</p>
           <div className="chip-list">
-            {highlights.map((item) => <span key={item} className="chip chip--primary">{item}</span>)}
+            {t.about.highlights.map((item) => <span key={item} className="chip chip--primary">{item}</span>)}
           </div>
         </div>
         <div className="skills-card">

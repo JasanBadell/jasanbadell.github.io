@@ -21,6 +21,7 @@ export const translations = {
       focus: "Enfoque 2026",
       stack: "Stack técnico",
       cvBtn: "Descargar CV (PDF)",
+      highlights: ["JavaScript moderno (ESNext)", "React + UI systems", "Accesibilidad WCAG", "Core Web Vitals", "SEO técnico", "IA aplicada a producto"],
     },
     projects: {
       eyebrow: "Portfolio",
@@ -35,6 +36,7 @@ export const translations = {
       eyebrow: "Contacto",
       title: "Construyamos algo útil y memorable.",
       p1: "Estoy abierto a oportunidades remotas, colaboraciones por proyecto y equipos que busquen mejorar sus productos digitales con una visión moderna de frontend.",
+      directEmail: "Escríbeme directamente a",
       emailNote: "Tiempo estimado de respuesta: 24–48 horas.",
       nameLabel: "Nombre",
       emailLabel: "Email",
@@ -53,6 +55,12 @@ export const translations = {
       language: "Idioma",
       adminTitle: "Panel de admin",
       adminDesc: "Gestionar proyectos y CV",
+    },
+    notFound: {
+      title: "Página no encontrada",
+      desc: "La ruta que intentas abrir no existe o fue movida.",
+      goHome: "← Ir al inicio",
+      viewProjects: "Ver proyectos",
     },
   },
   en: {
@@ -77,6 +85,7 @@ export const translations = {
       focus: "2026 Focus",
       stack: "Tech stack",
       cvBtn: "Download CV (PDF)",
+      highlights: ["Modern JavaScript (ESNext)", "React + UI systems", "WCAG Accessibility", "Core Web Vitals", "Technical SEO", "AI applied to product"],
     },
     projects: {
       eyebrow: "Portfolio",
@@ -91,6 +100,7 @@ export const translations = {
       eyebrow: "Contact",
       title: "Let's build something useful and memorable.",
       p1: "I'm open to remote opportunities, project-based collaborations, and teams looking to improve their digital products with a modern frontend vision.",
+      directEmail: "Write directly to",
       emailNote: "Estimated response time: 24–48 hours.",
       nameLabel: "Name",
       emailLabel: "Email",
@@ -109,6 +119,12 @@ export const translations = {
       language: "Language",
       adminTitle: "Admin panel",
       adminDesc: "Manage projects and CV",
+    },
+    notFound: {
+      title: "Page not found",
+      desc: "The route you're trying to open does not exist or was moved.",
+      goHome: "← Go home",
+      viewProjects: "View projects",
     },
   },
 } as const;

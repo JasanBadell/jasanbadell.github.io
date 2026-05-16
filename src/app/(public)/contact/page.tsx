@@ -17,7 +17,7 @@ export default function ContactPage() {
       <h1 className="page-title">{t.contact.title}</h1>
       <p className="page-copy">{t.contact.p1}</p>
       <article className="contact-highlight">
-        <p>Escríbeme directamente a <strong>jasanbadelldev@gmail.com</strong></p>
+        <p>{t.contact.directEmail} <strong>jasanbadelldev@gmail.com</strong></p>
         <p className="muted">{t.contact.emailNote}</p>
       </article>
       <ContactForm />

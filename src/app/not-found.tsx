@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useLanguage } from "@/lib/LanguageContext";
 
 export default function NotFound() {
+  const { t } = useLanguage();
+
   return (
     <section className="not-found">
       <div className="not-found__glitch-wrap">
@@ -16,11 +21,11 @@ export default function NotFound() {
       </div>
       <p className="not-found__status">
         <span className="not-found__badge">ERR</span>
-        Route not found — the page you requested does not exist or was moved.
+        {t.notFound.desc}
       </p>
       <div className="link-row">
-        <Link href="/" className="btn btn--primary">← Go home</Link>
-        <Link href="/projects" className="btn btn--ghost">View projects</Link>
+        <Link href="/" className="btn btn--primary">{t.notFound.goHome}</Link>
+        <Link href="/projects" className="btn btn--ghost">{t.notFound.viewProjects}</Link>
       </div>
     </section>
   );
