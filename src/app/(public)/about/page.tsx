@@ -9,10 +9,17 @@ export default function AboutPage() {
   return (
     <section className="panel page-stack">
       <p className="page-eyebrow">{t.about.eyebrow}</p>
-      <h1 className="page-title">{t.about.title}</h1>
-      <p className="page-copy">{t.about.p1}</p>
-      <p className="page-copy">{t.about.p2}</p>
-      <p className="page-copy">{t.about.p3}</p>
+      <div className="about-split">
+        <div className="about-split__text">
+          <h1 className="page-title">{t.about.title}</h1>
+          <p className="page-copy">{t.about.p1}</p>
+          <p className="page-copy">{t.about.p2}</p>
+          <p className="page-copy">{t.about.p3}</p>
+        </div>
+        <div className="about-split__photo">
+          <img src="/img/jasan-profile.jpeg" alt="Jasan Badell" className="about-portrait" />
+        </div>
+      </div>
       <div className="skills-grid">
         <div className="skills-card">
           <p className="section-title">{t.about.focus}</p>

@@ -37,7 +37,10 @@ export default function HomePage() {
         </nav>
       </article>
       <aside className="hero__side" aria-label="Navegación y redes">
-        <div className="hero__side-panel panel">
+        <div className="hero__side-panel hero__side-panel--connect panel">
+          <div className="hero__portrait-wrap">
+            <img src="/img/jasan-portrait-2.jpeg" alt="Jasan Badell" className="hero__portrait" />
+          </div>
           <p className="hero__side-label">{t.hero.connect}</p>
           <div className="hero__socials">
             {socialLinks.map((item) => (
@@ -47,7 +50,7 @@ export default function HomePage() {
             ))}
           </div>
         </div>
-        <div className="hero__side-panel panel">
+        <div className="hero__side-panel hero__side-panel--nav panel">
           <p className="hero__side-label">{t.hero.navigate}</p>
           <nav className="hero__nav" aria-label="Quick links">
             {quickLinks.map((item) => (
