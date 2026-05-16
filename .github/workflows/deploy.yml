@@ -32,11 +32,10 @@ jobs:
         run: |
           rm -f src/middleware.ts
           rm -rf src/app/api
+          rm -rf src/app/admin
 
       - name: Build static export
         run: npm run build
-        env:
-          NEXT_PUBLIC_FORMSPREE_ID: ${{ secrets.FORMSPREE_ID }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

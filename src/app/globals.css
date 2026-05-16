@@ -427,9 +427,23 @@ a {
   }
 
   .hero__side {
-    order: -1;
     grid-template-columns: 1fr 1fr;
     gap: 0.85rem;
+  }
+
+  /* Nav panel duplicates the header on mobile — hide it */
+  .hero__side-panel--nav {
+    display: none;
+  }
+
+  /* Socials panel spans full width when nav is hidden */
+  .hero__side-panel--connect {
+    grid-column: 1 / -1;
+  }
+
+  /* Socials row instead of stacked */
+  .hero__socials {
+    flex-wrap: wrap;
   }
 }
 
@@ -748,6 +762,31 @@ a {
   width: min(440px, 100%);
   display: grid;
   gap: 1.25rem;
+}
+
+/* ─── Admin password gate ─────────────────────────────────── */
+.admin-gate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+}
+
+.admin-gate__panel {
+  width: min(400px, 100%);
+  display: grid;
+  gap: 1.5rem;
+}
+
+.admin-gate__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.admin-gate__form {
+  display: grid;
+  gap: 1rem;
 }
 
 /* ─── Admin dashboard ─────────────────────────────────────── */
@@ -1128,6 +1167,10 @@ a {
   margin-bottom: 1.25rem;
   font-size: 0.72rem;
   color: var(--muted-dim);
+  padding: 0.35rem 0.6rem;
+  border-left: 2px solid var(--border);
+  background: rgba(255,255,255,0.02);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
 .breadcrumbs__item {
