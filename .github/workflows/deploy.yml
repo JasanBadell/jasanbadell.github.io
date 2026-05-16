@@ -22,14 +22,16 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Remove middleware (not supported in static export)
-        run: rm -f src/middleware.ts
+      - name: Remove server-only files (not supported in static export)
+        run: |
+          rm -f src/middleware.ts
+          rm -rf src/app/api
 
       - name: Build static export
         run: npm run build
