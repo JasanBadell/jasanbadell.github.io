@@ -11,11 +11,6 @@ const socialLinks = [
 
 export default function HomePage() {
   const { t } = useLanguage();
-  const quickLinks = [
-    { href: "/about", label: t.nav.about },
-    { href: "/projects", label: t.nav.projects },
-    { href: "/contact", label: t.nav.contact },
-  ];
 
   return (
     <div className="hero">
@@ -36,8 +31,8 @@ export default function HomePage() {
           <a href="/img/Jasan Badell CV.pdf" className="btn btn--ghost" target="_blank" rel="noreferrer">{t.hero.btnCV}</a>
         </nav>
       </article>
-      <aside className="hero__side" aria-label="Navegación y redes">
-        <div className="hero__side-panel hero__side-panel--connect panel">
+      <aside className="hero__side" aria-label="Redes sociales">
+        <div className="hero__side-panel panel">
           <div className="hero__portrait-wrap">
             <img src="/img/jasan-portrait-2.jpeg" alt="Jasan Badell" className="hero__portrait" />
           </div>
@@ -49,17 +44,6 @@ export default function HomePage() {
               </a>
             ))}
           </div>
-        </div>
-        <div className="hero__side-panel hero__side-panel--nav panel">
-          <p className="hero__side-label">{t.hero.navigate}</p>
-          <nav className="hero__nav" aria-label="Quick links">
-            {quickLinks.map((item) => (
-              <Link key={item.href} href={item.href} className="hero__nav-link">
-                {item.label}
-                <span className="hero__nav-arrow" aria-hidden="true">›</span>
-              </Link>
-            ))}
-          </nav>
         </div>
       </aside>
     </div>
