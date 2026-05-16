@@ -64,10 +64,6 @@ function fromForm(f: FormState): Omit<Project, "image"> & { image?: string } {
 
 type View = "list" | "add" | "edit";
 
-function setSessionCookie() {
-  document.cookie = "portfolio_session=authenticated; path=/; SameSite=Strict";
-}
-
 function PasswordGate({ onAuth }: { onAuth: () => void }) {
   const [pw, setPw] = useState("");
   const [error, setError] = useState(false);
@@ -77,7 +73,6 @@ function PasswordGate({ onAuth }: { onAuth: () => void }) {
     const correct = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "admin1234";
     if (pw === correct) {
       sessionStorage.setItem("admin_authed", "1");
-      setSessionCookie();
       onAuth();
     } else {
       setError(true);
@@ -130,10 +125,7 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
   const [cvMsg, setCvMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
-    if (sessionStorage.getItem("admin_authed") === "1") {
-      setSessionCookie();
-      setAuthed(true);
-    }
+    if (sessionStorage.getItem("admin_authed") === "1") setAuthed(true);
   }, []);
 
   // ── Early return after all hooks ──────────────────────────────

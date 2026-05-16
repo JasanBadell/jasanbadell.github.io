@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated } from "@/lib/auth";
 import { writeFile } from "fs/promises";
 import path from "path";
 
 export async function POST(req: NextRequest) {
-  if (!(await isAuthenticated())) {
-    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
-  }
-
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
 
