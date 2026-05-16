@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { Project } from "@/data/projects";
 
 type LinkRow = { href: string; label: string; external: boolean };
@@ -64,49 +64,7 @@ function fromForm(f: FormState): Omit<Project, "image"> & { image?: string } {
 
 type View = "list" | "add" | "edit";
 
-function PasswordGate({ onAuth }: { onAuth: () => void }) {
-  const [pw, setPw] = useState("");
-  const [error, setError] = useState(false);
-
-  function handleSubmit(e: { preventDefault(): void }) {
-    e.preventDefault();
-    const correct = process.env.NEXT_PUBLIC_ADMIN_PASSWORD ?? "admin1234";
-    if (pw === correct) {
-      sessionStorage.setItem("admin_authed", "1");
-      onAuth();
-    } else {
-      setError(true);
-      setPw("");
-    }
-  }
-
-  return (
-    <div className="admin-gate">
-      <div className="panel admin-gate__panel">
-        <h1 className="admin-gate__title">Panel de admin</h1>
-        <form onSubmit={handleSubmit} className="admin-gate__form">
-          <label className="form-field">
-            <span className="form-label">Contraseña</span>
-            <input
-              type="password"
-              value={pw}
-              onChange={(e) => { setPw(e.target.value); setError(false); }}
-              placeholder="••••••••"
-              autoFocus
-              required
-            />
-          </label>
-          {error && <p className="form-status form-status--error">Contraseña incorrecta</p>}
-          <button type="submit" className="btn btn--primary">Entrar</button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 export function AdminDashboard({ initialProjects }: { initialProjects: Project[] }) {
-  // ── ALL hooks first, before any early return ──────────────────
-  const [authed, setAuthed] = useState(false);
   const [view, setView] = useState<View>("list");
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
@@ -123,13 +81,6 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [cvUploading, setCvUploading] = useState(false);
   const [cvMsg, setCvMsg] = useState<{ text: string; ok: boolean } | null>(null);
-
-  useEffect(() => {
-    if (sessionStorage.getItem("admin_authed") === "1") setAuthed(true);
-  }, []);
-
-  // ── Early return after all hooks ──────────────────────────────
-  if (!authed) return <PasswordGate onAuth={() => setAuthed(true)} />;
 
   // ── Handlers ──────────────────────────────────────────────────
   async function refresh() {
