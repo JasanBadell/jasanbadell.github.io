@@ -14,6 +14,11 @@ export function ProjectsContent({ projects }: { projects: Project[] }) {
       <div className="card-stack">
         {projects.map((project, index) => (
           <article key={project.slug} className="project-card">
+            {project.image && (
+              <div className="project-card__image-wrap">
+                <img src={project.image} alt={project.title} className="project-card__image" />
+              </div>
+            )}
             <div className="project-card__meta">
               <span className="project-card__num">{String(index + 1).padStart(2, "0")}</span>
               <span className={`status-pill status-pill--${project.status}`}>

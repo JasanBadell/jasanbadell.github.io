@@ -14,6 +14,7 @@ export type Project = {
   tags: string[];
   links: ProjectLink[];
   status: "active" | "draft";
+  image?: string;
 };
 
 export function getProjects(): Project[] {

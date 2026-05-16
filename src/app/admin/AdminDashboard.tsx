@@ -13,6 +13,7 @@ type FormState = {
   tags: string;
   links: LinkRow[];
   status: "active" | "draft";
+  image: string;
 };
 
 const emptyForm: FormState = {
@@ -23,13 +24,14 @@ const emptyForm: FormState = {
   tags: "",
   links: [],
   status: "active",
+  image: "",
 };
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 }
@@ -43,10 +45,11 @@ function toForm(p: Project): FormState {
     tags: p.tags.join(", "),
     links: p.links.map((l) => ({ href: l.href, label: l.label, external: l.external ?? false })),
     status: p.status,
+    image: p.image ?? "",
   };
 }
 
-function fromForm(f: FormState): Project {
+function fromForm(f: FormState): Omit<Project, "image"> & { image?: string } {
   return {
     title: f.title.trim(),
     slug: f.slug.trim(),
@@ -55,6 +58,7 @@ function fromForm(f: FormState): Project {
     tags: f.tags.split(",").map((t) => t.trim()).filter(Boolean),
     links: f.links.filter((l) => l.href.trim()),
     status: f.status,
+    ...(f.image ? { image: f.image } : {}),
   };
 }
 
@@ -101,26 +105,33 @@ function PasswordGate({ onAuth }: { onAuth: () => void }) {
 }
 
 export function AdminDashboard({ initialProjects }: { initialProjects: Project[] }) {
+  // ── ALL hooks first, before any early return ──────────────────
   const [authed, setAuthed] = useState(false);
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
-
-  useEffect(() => {
-    if (sessionStorage.getItem("admin_authed") === "1") setAuthed(true);
-  }, []);
-
-  if (!authed) return <PasswordGate onAuth={() => setAuthed(true)} />;
   const [view, setView] = useState<View>("list");
+  const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
   const cvInputRef = useRef<HTMLInputElement>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [cvUploading, setCvUploading] = useState(false);
   const [cvMsg, setCvMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
+  useEffect(() => {
+    if (sessionStorage.getItem("admin_authed") === "1") setAuthed(true);
+  }, []);
+
+  // ── Early return after all hooks ──────────────────────────────
+  if (!authed) return <PasswordGate onAuth={() => setAuthed(true)} />;
+
+  // ── Handlers ──────────────────────────────────────────────────
   async function refresh() {
     const res = await fetch("/api/admin/projects");
     if (res.ok) {
@@ -133,6 +144,8 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
     setForm(emptyForm);
     setEditingSlug(null);
     setError(null);
+    setImageFile(null);
+    setImagePreview(null);
     setView("add");
   }
 
@@ -140,7 +153,21 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
     setForm(toForm(project));
     setEditingSlug(project.slug);
     setError(null);
+    setImageFile(null);
+    setImagePreview(null);
     setView("edit");
+  }
+
+  function handleImageSelect(file: File) {
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function clearImage() {
+    setImageFile(null);
+    setImagePreview(null);
+    setForm((p) => ({ ...p, image: "" }));
+    if (imageInputRef.current) imageInputRef.current.value = "";
   }
 
   async function handleDelete(slug: string) {
@@ -164,13 +191,24 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
       body: JSON.stringify(payload),
     });
 
-    if (res.ok) {
-      await refresh();
-      setView("list");
-    } else {
+    if (!res.ok) {
       const data = (await res.json()) as { error?: string };
       setError(data.error ?? "Error al guardar.");
+      setSaving(false);
+      return;
     }
+
+    if (imageFile) {
+      const fd = new FormData();
+      fd.append("file", imageFile);
+      fd.append("slug", payload.slug);
+      await fetch("/api/admin/projects/image", { method: "POST", body: fd });
+      setImageFile(null);
+      setImagePreview(null);
+    }
+
+    await refresh();
+    setView("list");
     setSaving(false);
   }
 
@@ -196,7 +234,9 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
     if (cvInputRef.current) cvInputRef.current.value = "";
   }
 
+  // ── Form view ─────────────────────────────────────────────────
   if (view !== "list") {
+    const currentImage = imagePreview ?? form.image;
     return (
       <div className="panel page-stack">
         <div className="admin-form-header">
@@ -280,6 +320,44 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
         </label>
 
         <div className="form-field">
+          <span className="form-label">Imagen del proyecto</span>
+          <div className="admin-image-upload">
+            {currentImage && (
+              <img src={currentImage} alt="Preview" className="admin-image-preview" />
+            )}
+            <div className="admin-image-actions">
+              <input
+                ref={imageInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) handleImageSelect(f);
+                }}
+              />
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => imageInputRef.current?.click()}
+              >
+                {currentImage ? "Cambiar imagen" : "Seleccionar imagen"}
+              </button>
+              {currentImage && (
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  style={{ color: "var(--accent)", borderColor: "var(--accent-border)" }}
+                  onClick={clearImage}
+                >
+                  Quitar
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="form-field">
           <span className="form-label">Links</span>
           <div className="admin-links-list">
             {form.links.map((link, i) => (
@@ -338,9 +416,9 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
     );
   }
 
+  // ── List view ─────────────────────────────────────────────────
   return (
     <div className="page-stack">
-      {/* Projects */}
       <div className="panel page-stack">
         <div className="admin-section-header">
           <div>
@@ -353,6 +431,9 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
         <div className="admin-project-list">
           {projects.map((project, i) => (
             <div key={project.slug} className="admin-project-row">
+              {project.image && (
+                <img src={project.image} alt={project.title} className="admin-project-thumb" />
+              )}
               <span className="admin-project-num">{String(i + 1).padStart(2, "0")}</span>
               <span className="admin-project-title">{project.title}</span>
               <span className={`status-pill status-pill--${project.status}`}>
@@ -381,7 +462,6 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
         </div>
       </div>
 
-      {/* CV */}
       <div className="panel page-stack">
         <div>
           <p className="page-eyebrow">Curriculum Vitae</p>
@@ -403,11 +483,7 @@ export function AdminDashboard({ initialProjects }: { initialProjects: Project[]
           <button type="button" className="btn btn--ghost" onClick={() => cvInputRef.current?.click()}>
             {cvFile ? `📄 ${cvFile.name}` : "Seleccionar PDF"}
           </button>
-          <button
-            className="btn btn--primary"
-            onClick={handleCvUpload}
-            disabled={!cvFile || cvUploading}
-          >
+          <button className="btn btn--primary" onClick={handleCvUpload} disabled={!cvFile || cvUploading}>
             {cvUploading ? "Subiendo..." : "Actualizar CV"}
           </button>
         </div>

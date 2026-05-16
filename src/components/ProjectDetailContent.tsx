@@ -16,6 +16,11 @@ export function ProjectDetailContent({ project }: { project: Project }) {
           {project.status === "active" ? t.projects.active : t.projects.draft}
         </span>
       </div>
+      {project.image && (
+        <div className="project-detail__image-wrap">
+          <img src={project.image} alt={project.title} className="project-detail__image" />
+        </div>
+      )}
       <p style={{ color: "#ccc", lineHeight: "1.76", fontSize: "0.95rem" }}>{project.summary}</p>
       <div className="chip-list">
         {project.tags.map((tag) => <span key={tag} className="chip chip--primary">{tag}</span>)}
